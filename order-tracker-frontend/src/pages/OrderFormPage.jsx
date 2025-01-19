@@ -1,7 +1,9 @@
+import OrderForm from "../components/OrderForm";
+
 const OrderFormPage = () => {
   return (
     <div>
-      <h1>Order Form Page</h1>
+      <OrderForm />
     </div>
   );
 };

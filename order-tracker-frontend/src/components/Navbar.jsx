@@ -3,7 +3,7 @@ import { FaReact } from "react-icons/fa";
 
 const Navbar = () => {
   return (
-    <nav className="w-full h-16 flex justify-between items-center p-10">
+    <nav className="w-full h-16 flex justify-between items-center p-10 bg-blue-500 text-white">
       <div>
         <Link to="/">
           <FaReact size={30} />
