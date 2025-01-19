@@ -1,19 +1,42 @@
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import orderApiService from "../api/orderApi";
 
 const OrderForm = () => {
   const { register, handleSubmit } = useForm();
 
-  const suppliers = [
-    { value: "supplierA", label: "Supplier A" },
-    { value: "supplierB", label: "Supplier B" },
-    { value: "supplierC", label: "Supplier C" },
-  ];
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [suppliers, setSuppliers] = useState([]);
+  const [departments, setDepartments] = useState([]);
 
-  const departments = [
-    { value: "sales", label: "Sales" },
-    { value: "marketing", label: "Marketing" },
-    { value: "engineering", label: "Engineering" },
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+
+      try {
+        const fetchedSuppliers = await orderApiService.getAllSuppliers();
+        const fetchedDepartments = await orderApiService.getAllDepartments();
+
+        setSuppliers(fetchedSuppliers);
+        setDepartments(fetchedDepartments);
+      } catch (err) {
+        setError(err.message || "Failed to fetch from API service");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return <div>Loading orders...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <div className="relative py-3 sm:max-w-xl sm:mx-auto">
@@ -71,8 +94,8 @@ const OrderForm = () => {
                   >
                     <option value="">Select a department</option>
                     {departments.map((department) => (
-                      <option key={department.value} value={department.value}>
-                        {department.label}
+                      <option key={department.id} value={department.id}>
+                        {department.name}
                       </option>
                     ))}
                   </select>
@@ -92,8 +115,8 @@ const OrderForm = () => {
                   >
                     <option value="">Select a supplier</option>
                     {suppliers.map((supplier) => (
-                      <option key={supplier.value} value={supplier.value}>
-                        {supplier.label}
+                      <option key={supplier.id} value={supplier.id}>
+                        {supplier.name}
                       </option>
                     ))}
                   </select>
