@@ -34,7 +34,7 @@ const orderApiService = {
   createOrder: async (orderData) => {
     try {
       const response = await orderApi.post("/orders", orderData);
-      return response.data;
+      return response;
     } catch (error) {
       console.error("Error creating order:", error);
       throw error;

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import orderApiService from "../api/orderApi";
+import { useNavigate } from "react-router-dom";
 
 const OrderForm = () => {
   const { register, handleSubmit } = useForm();
@@ -9,6 +10,22 @@ const OrderForm = () => {
   const [error, setError] = useState("");
   const [suppliers, setSuppliers] = useState([]);
   const [departments, setDepartments] = useState([]);
+
+  const navigate = useNavigate();
+
+  const handleFormSubmit = async (data) => {
+    try {
+      const response = await orderApiService.createOrder(data);
+
+      if (response.status != 201) {
+        throw new Error("Failed to create order. Please check the form data.");
+      }
+
+      navigate("/orders");
+    } catch (err) {
+      setError(err.message || "Failed to submit form.");
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,7 +52,12 @@ const OrderForm = () => {
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return (
+      <div>
+        <p>Error: {error} </p>
+        <button onClick={() => setError("")}>Retry</button>
+      </div>
+    );
   }
 
   return (
@@ -47,7 +69,7 @@ const OrderForm = () => {
           </div>
           <div className="divide-y divide-gray-200">
             <div className="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
-              <form onSubmit={handleSubmit((data) => console.log(data))}>
+              <form onSubmit={handleSubmit(handleFormSubmit)}>
                 <div className="mb-4">
                   <label
                     htmlFor="fullname"
@@ -59,7 +81,7 @@ const OrderForm = () => {
                     type="text"
                     id="fullname"
                     placeholder="Full name"
-                    {...register("fullname")}
+                    {...register("fullname", { required: true })}
                     className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                   />
                 </div>
@@ -75,7 +97,7 @@ const OrderForm = () => {
                     type="number"
                     id="total_cost"
                     placeholder="Total cost"
-                    {...register("total_cost")}
+                    {...register("total_cost", { required: true })}
                     className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                   />
                 </div>
@@ -89,10 +111,12 @@ const OrderForm = () => {
                   </label>
                   <select
                     id="department"
-                    {...register("department")}
+                    {...register("department_id", {
+                      valueAsNumber: true,
+                      required: true,
+                    })}
                     className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                   >
-                    <option value="">Select a department</option>
                     {departments.map((department) => (
                       <option key={department.id} value={department.id}>
                         {department.name}
@@ -110,10 +134,12 @@ const OrderForm = () => {
                   </label>
                   <select
                     id="supplier"
-                    {...register("supplier")}
+                    {...register("supplier_id", {
+                      valueAsNumber: true,
+                      required: true,
+                    })}
                     className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                   >
-                    <option value="">Select a supplier</option>
                     {suppliers.map((supplier) => (
                       <option key={supplier.id} value={supplier.id}>
                         {supplier.name}
