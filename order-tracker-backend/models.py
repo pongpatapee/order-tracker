@@ -27,3 +27,12 @@ class Order(BaseModel):
     department_id: int
     supplier_id: int
     reason_for_order: str
+
+
+class OrderResponse(BaseModel):
+    id: int
+    fullname: str
+    total_cost: float
+    department_name: str
+    supplier_name: str
+    reason_for_order: str

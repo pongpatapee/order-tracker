@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import joinedload
 
 from database import DepartmentTable, OrderTable, SessionDep, SupplierTable
-from models import Department, Order, OrderCreate, Supplier
+from models import Department, Order, OrderCreate, OrderResponse, Supplier
 
 app = FastAPI()
 
@@ -28,7 +28,7 @@ def ping():
     return {"response": "pong"}
 
 
-@app.get("/orders", response_model=List[Order])
+@app.get("/orders", response_model=List[OrderResponse])
 def get_all_orders(db: SessionDep):
     orders = (
         db.query(OrderTable)
@@ -36,7 +36,17 @@ def get_all_orders(db: SessionDep):
         .all()
     )
 
-    return orders
+    return [
+        OrderResponse(
+            id=order.id,
+            fullname=order.fullname,
+            total_cost=order.total_cost,
+            department_name=order.department.name if order.department else "",
+            supplier_name=order.supplier.name if order.supplier else "",
+            reason_for_order=order.reason_for_order,
+        )
+        for order in orders
+    ]
 
 
 @app.post("/orders", status_code=status.HTTP_201_CREATED, response_model=Order)
@@ -49,7 +59,7 @@ def create_order(order: OrderCreate, db: SessionDep):
     return db_order
 
 
-@app.get("/orders/{order_id}", response_model=Order)
+@app.get("/orders/{order_id}", response_model=OrderResponse)
 def get_order(order_id: int, db: SessionDep):
     order = (
         db.query(OrderTable)
@@ -57,9 +67,18 @@ def get_order(order_id: int, db: SessionDep):
         .filter(OrderTable.id == order_id)
         .first()
     )
+
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
-    return order
+
+    return OrderResponse(
+        id=order.id,
+        fullname=order.fullname,
+        total_cost=order.total_cost,
+        department_name=order.department.name if order.department else "",
+        supplier_name=order.supplier.name if order.supplier else "",
+        reason_for_order=order.reason_for_order,
+    )
 
 
 @app.put("/orders/{order_id}", response_model=Order)
