@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import orderApiService from "../api/orderApi";
 import OrderRow from "./OrderRow";
 
-const OrdersTable = ({ orders, handleDelete }) => {
+const OrdersTable = ({ orders, handleEdit, handleDelete }) => {
   return (
     <div className="container mx-auto p-4">
       <table className="min-w-full divide-y divide-gray-200 border border-gray-300 shadow-sm">
@@ -51,6 +51,7 @@ const OrdersTable = ({ orders, handleDelete }) => {
             <OrderRow
               key={order.id}
               order={order}
+              handleEdit={handleEdit}
               handleDelete={handleDelete}
             />
           ))}

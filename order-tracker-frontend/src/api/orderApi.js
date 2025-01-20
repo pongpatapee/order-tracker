@@ -43,8 +43,8 @@ const orderApiService = {
 
   updateOrder: async (orderId, orderData) => {
     try {
-      const response = await orderApi.patch(`/orders/${orderId}`, orderData);
-      return response.data;
+      const response = await orderApi.put(`/orders/${orderId}`, orderData);
+      return response;
     } catch (error) {
       console.error(`Error updating order ${orderId}:`, error);
       throw error;

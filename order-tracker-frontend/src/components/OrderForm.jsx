@@ -2,8 +2,14 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import orderApiService from "../api/orderApi";
 
-const OrderForm = ({ setDone }) => {
-  const { register, handleSubmit } = useForm();
+const OrderForm = ({ handleCleanUp, order }) => {
+  const { register, handleSubmit } = useForm({
+    defaultValues: {
+      ...order,
+      department_id: order.department.id,
+      supplier_id: order.supplier.id,
+    },
+  });
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -12,13 +18,30 @@ const OrderForm = ({ setDone }) => {
 
   const handleFormSubmit = async (data) => {
     try {
-      const response = await orderApiService.createOrder(data);
+      if (order) {
+        data.department_id = data.department.id;
+        data.supplier_id = data.supplier.id;
 
-      if (response.status != 201) {
-        throw new Error("Failed to create order. Please check the form data.");
+        const response = await orderApiService.updateOrder(order.id, data);
+
+        if (response.status != 200) {
+          throw new Error("Failed to update order");
+        }
+
+        console.log("Updated order in server");
+      } else {
+        const response = await orderApiService.createOrder(data);
+
+        if (response.status != 201) {
+          throw new Error(
+            "Failed to create order. Please check the form data.",
+          );
+        }
+
+        console.log("Created order in server");
       }
 
-      setDone(true);
+      handleCleanUp();
     } catch (err) {
       setError(err.message || "Failed to submit form.");
     }

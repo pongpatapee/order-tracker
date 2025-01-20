@@ -3,8 +3,12 @@ import OrderForm from "../components/OrderForm";
 import { useEffect, useState } from "react";
 import orderApiService from "../api/orderApi";
 
+let renderCount = 0;
+
 const OrdersPage = () => {
-  const [isAddingOrder, setIsAddingOrder] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [orderEdit, setOrderEdit] = useState(null);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -25,6 +29,24 @@ const OrdersPage = () => {
     }
   };
 
+  console.log(++renderCount);
+  console.log("orderEdit: ", orderEdit);
+
+  const handleEdit = async (order) => {
+    setIsEditing(true);
+    setOrderEdit(order);
+  };
+
+  const handleAdd = () => {
+    setIsAdding(true);
+  };
+
+  const handleRestAddEdit = () => {
+    setIsAdding(false);
+    setIsEditing(false);
+    setOrderEdit(null);
+  };
+
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -40,7 +62,7 @@ const OrdersPage = () => {
     };
 
     fetchOrders();
-  }, []);
+  }, [isAdding, isEditing]);
 
   if (loading) {
     return <div>Loading Orders...</div>;
@@ -49,7 +71,7 @@ const OrdersPage = () => {
   if (error) {
     return (
       <div>
-        <p>Error occured: {error}</p>{" "}
+        <p>Error occured: {error}</p>
         <button onClick={() => setError("")}>Retry</button>
       </div>
     );
@@ -59,17 +81,21 @@ const OrdersPage = () => {
     <div className="flex flex-col justify-center items-center">
       <h1>Orders Page</h1>
 
-      {isAddingOrder ? (
-        <OrderForm setDone={(isDone) => setIsAddingOrder(!isDone)} />
+      {isAdding || isEditing ? (
+        <OrderForm order={orderEdit} handleCleanUp={handleRestAddEdit} />
       ) : (
-        <OrdersTable orders={orders} handleDelete={handleDelete} />
+        <OrdersTable
+          orders={orders}
+          handleDelete={handleDelete}
+          handleEdit={handleEdit}
+        />
       )}
 
       <button
         className="border-2 rounded-xl p-4"
-        onClick={() => setIsAddingOrder(!isAddingOrder)}
+        onClick={isAdding || isEditing ? handleRestAddEdit : handleAdd}
       >
-        {isAddingOrder ? "Cancel" : "Add Order"}
+        {isAdding || isEditing ? "Cancel" : "Add Order"}
       </button>
     </div>
   );
