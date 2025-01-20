@@ -1,10 +1,27 @@
 import { useEffect, useState } from "react";
 import orderApiService from "../api/orderApi";
+import OrderRow from "./OrderRow";
 
 const OrdersTable = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const handleDelete = async (orderId) => {
+    try {
+      // api stuff
+      const response = await orderApiService.deleteOrder(orderId);
+
+      if (response.status != 204) {
+        throw new Error(`Failed to delete order ${orderId}`);
+      }
+
+      // state stuff
+      setOrders(orders.filter((order) => order.id !== orderId));
+    } catch (err) {
+      setError(err.message);
+    }
+  };
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -28,7 +45,12 @@ const OrdersTable = () => {
   }
 
   if (error) {
-    return <div>Error occured: {error}</div>;
+    return (
+      <div>
+        <p>Error occured: {error}</p>{" "}
+        <button onClick={() => setError("")}>Retry</button>
+      </div>
+    );
   }
 
   return (
@@ -66,27 +88,17 @@ const OrdersTable = () => {
             >
               Reason
             </th>
+            <th
+              scope="col"
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Actions
+            </th>
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {orders.map((order) => (
-            <tr key={order.id}>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {order.fullname}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {order.total_cost}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {order.department_name}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {order.supplier_name}
-              </td>
-              <td className="px-6 py-4 text-sm text-gray-900">
-                {order.reason_for_order}
-              </td>
-            </tr>
+            <OrderRow order={order} handleDelete={handleDelete} />
           ))}
         </tbody>
       </table>

@@ -53,7 +53,8 @@ const orderApiService = {
 
   deleteOrder: async (orderId) => {
     try {
-      await orderApi.delete(`/orders/${orderId}`);
+      const response = await orderApi.delete(`/orders/${orderId}`);
+      return response;
     } catch (error) {
       console.error(`Error deleting order ${orderId}:`, error);
       throw error;
