@@ -41,8 +41,16 @@ def get_all_orders(db: SessionDep):
             id=order.id,
             fullname=order.fullname,
             total_cost=order.total_cost,
-            department_name=order.department.name if order.department else "",
-            supplier_name=order.supplier.name if order.supplier else "",
+            department=(
+                Department(id=order.department.id, name=order.department.name)
+                if order.department
+                else None
+            ),
+            supplier=(
+                Supplier(id=order.supplier.id, name=order.supplier.name)
+                if order.supplier
+                else None
+            ),
             reason_for_order=order.reason_for_order,
         )
         for order in orders
@@ -75,8 +83,16 @@ def get_order(order_id: int, db: SessionDep):
         id=order.id,
         fullname=order.fullname,
         total_cost=order.total_cost,
-        department_name=order.department.name if order.department else "",
-        supplier_name=order.supplier.name if order.supplier else "",
+        department=(
+            Department(id=order.department.id, name=order.department.name)
+            if order.department
+            else None
+        ),
+        supplier=(
+            Supplier(id=order.supplier.id, name=order.supplier.name)
+            if order.supplier
+            else None
+        ),
         reason_for_order=order.reason_for_order,
     )
 

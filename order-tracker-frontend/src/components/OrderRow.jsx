@@ -10,11 +10,11 @@ const OrderRow = ({ order, handleEdit, handleDelete }) => {
       </td>
 
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-        {order.department_name}
+        {order.department.name}
       </td>
 
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-        {order.supplier_name}
+        {order.supplier.name}
       </td>
 
       <td className="px-6 py-4 text-sm text-gray-900">

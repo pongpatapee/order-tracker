@@ -33,6 +33,6 @@ class OrderResponse(BaseModel):
     id: int
     fullname: str
     total_cost: float
-    department_name: str
-    supplier_name: str
+    department: Department
+    supplier: Supplier
     reason_for_order: str
