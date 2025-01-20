@@ -19,9 +19,6 @@ const OrderForm = ({ handleCleanUp, order }) => {
   const handleFormSubmit = async (data) => {
     try {
       if (order) {
-        data.department_id = data.department.id;
-        data.supplier_id = data.supplier.id;
-
         const response = await orderApiService.updateOrder(order.id, data);
 
         if (response.status != 200) {
