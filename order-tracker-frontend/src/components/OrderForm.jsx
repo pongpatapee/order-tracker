@@ -6,8 +6,8 @@ const OrderForm = ({ handleCleanUp, order }) => {
   const { register, handleSubmit } = useForm({
     defaultValues: {
       ...order,
-      department_id: order.department.id,
-      supplier_id: order.supplier.id,
+      department_id: order?.department?.id,
+      supplier_id: order?.supplier?.id,
     },
   });
 
