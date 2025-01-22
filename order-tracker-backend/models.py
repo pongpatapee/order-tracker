@@ -1,13 +1,17 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 # TODO: integrate supplier and department
 class Supplier(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     name: str
 
 
 class Department(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     name: str
 
@@ -21,6 +25,8 @@ class OrderCreate(BaseModel):
 
 
 class Order(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     fullname: str
     total_cost: float
@@ -30,6 +36,8 @@ class Order(BaseModel):
 
 
 class OrderResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     fullname: str
     total_cost: float

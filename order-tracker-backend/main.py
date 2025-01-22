@@ -36,25 +36,7 @@ def get_all_orders(db: SessionDep):
         .all()
     )
 
-    return [
-        OrderResponse(
-            id=order.id,
-            fullname=order.fullname,
-            total_cost=order.total_cost,
-            department=(
-                Department(id=order.department.id, name=order.department.name)
-                if order.department
-                else None
-            ),
-            supplier=(
-                Supplier(id=order.supplier.id, name=order.supplier.name)
-                if order.supplier
-                else None
-            ),
-            reason_for_order=order.reason_for_order,
-        )
-        for order in orders
-    ]
+    return [OrderResponse.model_validate(order) for order in orders]
 
 
 @app.post("/orders", status_code=status.HTTP_201_CREATED, response_model=Order)
@@ -79,22 +61,7 @@ def get_order(order_id: int, db: SessionDep):
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
 
-    return OrderResponse(
-        id=order.id,
-        fullname=order.fullname,
-        total_cost=order.total_cost,
-        department=(
-            Department(id=order.department.id, name=order.department.name)
-            if order.department
-            else None
-        ),
-        supplier=(
-            Supplier(id=order.supplier.id, name=order.supplier.name)
-            if order.supplier
-            else None
-        ),
-        reason_for_order=order.reason_for_order,
-    )
+    return OrderResponse.model_validate(order)
 
 
 @app.put("/orders/{order_id}", response_model=Order)
@@ -124,7 +91,8 @@ def delete_order(order_id: int, db: SessionDep):
 @app.get("/departments", response_model=List[Department])
 def get_all_departments(db: SessionDep):
     departments = db.query(DepartmentTable).all()
-    return departments
+
+    return [Department.model_validate(d) for d in departments]
 
 
 # @app.post(
@@ -141,7 +109,7 @@ def get_all_departments(db: SessionDep):
 @app.get("/suppliers", response_model=List[Supplier])
 def get_all_suppliers(db: SessionDep):
     suppliers = db.query(SupplierTable).all()
-    return suppliers
+    return [Supplier.model_validate(s) for s in suppliers]
 
 
 # @app.post("/suppliers", status_code=status.HTTP_201_CREATED, response_model=Supplier)
